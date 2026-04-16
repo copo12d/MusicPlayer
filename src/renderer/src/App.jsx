@@ -1,9 +1,19 @@
+import Sidebar from './components/Sidebar'
+import Bottombar from './components/Bottombar'
+import Mainview from './components/Mainview'
+
 function App() {
   return (
-    <div className="bg-gray-100 blur-smoke min-h-screen">
-      <div className="flex items-center justify-center h-screen">
-        <h1 className="text-3xl font-serif italic font-normal ">Electron + Vite</h1>
+    <div className="h-screen overflow-hidden bg-background text-on-background flex flex-col">
+      <div className="flex flex-1 min-h-0">
+        <Sidebar />
+        <main className="flex-1 min-h-0 overflow-auto flex items-center justify-center p-6">
+          <Mainview />
+        </main>
       </div>
+      <footer>
+        <Bottombar />
+      </footer>
     </div>
   )
 }

@@ -1,1 +1,33 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/manrope';
+@import '@fontsource-variable/inter';
+
+@theme {
+  /* Fuentes */
+  --font-headline: 'Manrope Variable', sans-serif;
+  --font-body: 'Inter Variable', sans-serif;
+
+  /* Colores */
+  --color-primary: #a3a6ff;
+  --color-background: #0e0e0e;
+  --color-surface: #0e0e0e;
+  --color-surface-dim: #0e0e0e;
+  --color-surface-container-low: #131313;
+  --color-surface-container: #1a1a1a;
+  --color-surface-container-high: #20201f;
+  --color-surface-container-highest: #262626;
+  --color-on-surface: #ffffff;
+  --color-on-surface-variant: #adaaaa;
+  --color-outline: #767575;
+  --color-outline-variant: #484847;
+}
+
+/* Estilos globales */
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+  background-color: #0e0e0e;
+  color: #ffffff;
+}
