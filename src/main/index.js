@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -51,6 +51,31 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+
+  // Open a file picker dialog and return the selected audio file paths
+  ipcMain.handle('dialog:openFiles', async () => {
+    const { filePaths } = await dialog.showOpenDialog({
+      properties: ['openFile', 'multiSelections'],
+      filters: [{ name: 'Audio', extensions: ['mp3', 'flac', 'wav', 'ogg', 'm4a', 'aac'] }]
+    })
+    return filePaths ?? []
+  })
+
+  // Parse and return metadata for a given audio file path
+  ipcMain.handle('audio:getMetadata', async (_, filePath) => {
+    const { parseFile } = await import('music-metadata')
+    const metadata = await parseFile(filePath)
+    const picture = metadata.common.picture?.[0]
+    return {
+      title: metadata.common.title ?? null,
+      artist: metadata.common.artist ?? null,
+      album: metadata.common.album ?? null,
+      duration: metadata.format.duration ?? null,
+      picture: picture
+        ? { data: Buffer.from(picture.data).toString('base64'), format: picture.format }
+        : null
+    }
+  })
 
   createWindow()
 
