@@ -1,8 +1,10 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
+import * as mm from 'music-metadata'
+import fg from 'fast-glob'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-
+import store from 'electron-store'
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -13,7 +15,9 @@ function createWindow() {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: true,
+      contextIsolation: true,
+      nodeIntegration: false
     }
   })
 
@@ -68,6 +72,53 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+ipcMain.handle('dialog:openDirectory', async () => {
+  return dialog.showOpenDialog({
+    properties: ['openDirectory']
+  })
+})
+
+ipcMain.handle('library:scanDirectory', async (_event, dirPath) => {
+  const patterns = ['**/*.mp3', '**/*.flac', '**/*.m4a', '**/*.aac', '**/*.ogg', '**/*.wav']
+  const files = await fg(patterns, { cwd: dirPath, absolute: true, onlyFiles: true, unique: true })
+
+  const songs = []
+  for (const filepath of files) {
+    try {
+      const metadata = await mm.parseFile(filepath)
+      const title = metadata.common.title || 'Desconocido'
+      const artist = metadata.common.artist || 'Desconocido'
+      const album = metadata.common.album || 'Desconocido'
+      const duration = metadata.format.duration || 0
+      const year = metadata.common.year || 'Desconocido'
+
+      let pictureDataUrl = ''
+      const pic = metadata.common.picture?.[0]
+      if (pic?.data && pic?.format) {
+        const base64 = Buffer.from(pic.data).toString('base64')
+        pictureDataUrl = `data:${pic.format};base64,${base64}`
+      }
+
+      songs.push({ title, artist, album, duration, year, filepath, picture: pictureDataUrl })
+    } catch (error) {
+      console.error(`Error al leer el archivo ${filepath}:`, error)
+    }
+  }
+
+  return songs
+})
+
+const storeinstance = new store()
+
+ipcMain.handle('setMusicDirectory', async (_event, dirPath) => {
+  storeinstance.set('musicDirectory', dirPath)
+  return true
+})
+
+ipcMain.handle('getMusicDirectory', async () => {
+  return storeinstance.get('musicDirectory', '')
 })
 
 // In this file you can include the rest of your app's specific main process
