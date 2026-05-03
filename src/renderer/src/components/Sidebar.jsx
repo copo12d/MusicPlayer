@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+import { SongsContext } from '../context/songsContext'
 
 function Sidebar() {
-  const songs = [
+  const { songs } = useContext(SongsContext)
+  const songs_mock = [
     {
       uuid: '7d534228-5165-11e9-9375-549f35161576',
       name: 'bad guy',
@@ -34,30 +36,49 @@ function Sidebar() {
     }
   ]
 
-  const [selected, setSelected] = useState(songs[0]?.uuid)
+  const hasRealSongs = songs.length > 0
+  const visibleSongs = hasRealSongs
+    ? songs.map((song) => ({
+        id: song.filepath,
+        name: song.title,
+        creditName: song.artist,
+        imageUrl: song.picture || ''
+      }))
+    : songs_mock
+
+  const [selected, setSelected] = useState(visibleSongs[0]?.id)
+  const activeSelected = visibleSongs.some((song) => song.id === selected)
+    ? selected
+    : visibleSongs[0]?.id
 
   return (
     <div className="h-full w-72 shrink-0 flex flex-col bg-surface-container-low text-white p-4 border-r border-outline-variant">
       <h2 className="text-2xl font-bold mb-4">PlayList</h2>
       <p className="text-sm mr-4 text-on-surface-variant">My Playlists</p>
       <ul className="mt-4 space-y-2 overflow-y-auto pr-1">
-        {songs.map((song) => (
+        {visibleSongs.map((song) => (
           <li
-            key={song.uuid}
-            onClick={() => setSelected(song.uuid)}
+            key={song.id}
+            onClick={() => setSelected(song.id)}
             className={
               'flex items-center gap-3 px-2 py-2 rounded-md cursor-pointer transition-colors ' +
-              (selected === song.uuid
+              (activeSelected === song.id
                 ? 'bg-surface-container-high text-white'
                 : 'text-gray-300 hover:bg-surface-container hover:text-white')
             }
           >
-            <img
-              src={song.imageUrl}
-              alt={`Cover de ${song.name}`}
-              className="h-11 w-11 rounded-md object-cover border border-outline-variant/50"
-              loading="lazy"
-            />
+            {song.imageUrl ? (
+              <img
+                src={song.imageUrl}
+                alt={`Cover de ${song.name}`}
+                className="h-11 w-11 rounded-md object-cover border border-outline-variant/50"
+                loading="lazy"
+              />
+            ) : (
+              <div className="h-11 w-11 rounded-md border border-outline-variant/50 bg-surface-container flex items-center justify-center text-[10px] font-semibold text-on-surface-variant">
+                MP3
+              </div>
+            )}
             <div className="min-w-0">
               <p className="text-sm font-medium text-on-surface truncate">{song.name}</p>
               <p className="text-xs text-on-surface-variant truncate">{song.creditName}</p>

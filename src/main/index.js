@@ -4,7 +4,7 @@ import * as mm from 'music-metadata'
 import fg from 'fast-glob'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import store from 'electron-store'
+import Store from 'electron-store'
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -110,16 +110,16 @@ ipcMain.handle('library:scanDirectory', async (_event, dirPath) => {
   return songs
 })
 
-const storeinstance = new store()
+// const store = new Store()
 
-ipcMain.handle('setMusicDirectory', async (_event, dirPath) => {
-  storeinstance.set('musicDirectory', dirPath)
-  return true
-})
+// ipcMain.on('setMusicDirectory', async (_event, dirPath) => {
+//   store.set('musicDirectory', dirPath)
+//   return true
+// })
 
-ipcMain.handle('getMusicDirectory', async () => {
-  return storeinstance.get('musicDirectory', '')
-})
+// ipcMain.handle('getMusicDirectory', async () => {
+//   return store.get('musicDirectory', '')
+// })
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
