@@ -1,6 +1,5 @@
 import { Settings } from 'lucide-react'
 import { useContext } from 'react'
-import LibraryProvider from '../context/LibraryProvider'
 import { SongsContext } from '../context/songsContext'
 
 function SettingsButton() {

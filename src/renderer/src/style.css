@@ -21,6 +21,9 @@
   --color-outline: #767575;
   --color-outline-variant: #484847;
 }
+@utility no-scrollbar {
+  @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+}
 
 /* Estilos globales */
 html,
