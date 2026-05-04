@@ -1,10 +1,22 @@
 import { Play, SkipBack, SkipForward, Shuffle, Repeat, Heart, Volume2, Pause } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+import { SongsContext } from '../context/songsContext'
 
 function Bottombar() {
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(42)
   const [volume, setVolume] = useState(70)
+  const { selectedSongPath, songs } = useContext(SongsContext)
+
+  const selectedSong = songs.find((song) => song.filepath === selectedSongPath)
+
+  const selectedTime = selectedSong ? Math.round(selectedSong.duration) : 0
+
+  function formatDuration(seconds) {
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`
+  }
 
   const controlClass =
     'rounded-full p-2 text-on-surface-variant transition-all duration-200 hover:text-white hover:bg-white/10 hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.85)]'
@@ -13,10 +25,18 @@ function Bottombar() {
     <div className="w-full border-t border-outline-variant bg-surface-container px-4 py-3 md:px-6">
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-3 md:grid-cols-[1fr_2fr_1fr]">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="h-10 w-10 rounded-md bg-surface-container-high border border-outline-variant" />
+          <img
+            src={selectedSong?.picture || ''}
+            alt={selectedSong?.title}
+            className="h-10 w-10 rounded-md bg-surface-container-high border border-outline-variant"
+          />
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-on-surface">bad guy</p>
-            <p className="truncate text-xs text-on-surface-variant">Billie Eilish</p>
+            <p className="truncate text-sm font-semibold text-on-surface">
+              {selectedSong ? selectedSong.title : 'Selecciona una canción'}
+            </p>
+            <p className="truncate text-xs text-on-surface-variant">
+              {selectedSong ? selectedSong.artist : ''}
+            </p>
           </div>
           <button className={controlClass} aria-label="Agregar a favoritos">
             <Heart className="h-4 w-4" />
@@ -47,7 +67,9 @@ function Bottombar() {
           </div>
 
           <div className="flex w-full items-center gap-2 px-2">
-            <span className="w-10 text-right text-xs text-on-surface-variant">1:24</span>
+            <span className="w-10 text-right text-xs text-on-surface-variant">
+              {formatDuration(selectedTime)}
+            </span>
             <input
               type="range"
               min="0"
