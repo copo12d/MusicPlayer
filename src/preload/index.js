@@ -6,7 +6,8 @@ const musicAPI = {
   openDirectory: () => ipcRenderer.invoke('dialog:openDirectory'),
   scanDirectory: (dirPath) => ipcRenderer.invoke('library:scanDirectory', dirPath),
   setMusicDirectory: (dirPath) => ipcRenderer.invoke('library:setMusicDirectory', dirPath),
-  getMusicDirectory: () => ipcRenderer.invoke('library:getMusicDirectory')
+  getMusicDirectory: () => ipcRenderer.invoke('library:getMusicDirectory'),
+  readAudioFile: (filePath) => ipcRenderer.invoke('library:readAudioFile', filePath)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

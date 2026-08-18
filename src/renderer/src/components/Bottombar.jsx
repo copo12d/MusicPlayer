@@ -6,7 +6,7 @@ function Bottombar() {
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(42)
   const [volume, setVolume] = useState(70)
-  const { selectedSongPath, songs } = useContext(SongsContext)
+  const { selectedSongPath, songs, togglePlayPauseOrPlaySelected } = useContext(SongsContext)
 
   const selectedSong = songs.find((song) => song.filepath === selectedSongPath)
 
@@ -52,7 +52,10 @@ function Bottombar() {
               <SkipBack className="h-5 w-5" />
             </button>
             <button
-              onClick={() => setPlaying(!playing)}
+              onClick={() => {
+                setPlaying(!playing)
+                togglePlayPauseOrPlaySelected(volume / 100)
+              }}
               className="rounded-full p-2 text-on-surface transition-all duration-200 hover:text-white hover:bg-white/10 hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.95)]"
               aria-label={playing ? 'Pausar' : 'Reproducir'}
             >

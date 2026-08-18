@@ -17,7 +17,7 @@ function Mainview() {
         <div className="blur-[60px] rounded-full opacity-50 absolute -inset-8 bg-primary/30" />
         {selectedSong?.picture ? (
           <img
-            src={selectedSong?.picture || ''}
+            src={selectedSong?.picture || null}
             alt={selectedSong ? selectedSong.title : 'Titulo'}
             className="rounded-xl shadow-2xl h-40 w-40 md:h-52 md:w-52"
           />

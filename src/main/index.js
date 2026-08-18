@@ -2,9 +2,10 @@ import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import * as mm from 'music-metadata'
 import fg from 'fast-glob'
+import fs from 'node:fs/promises'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import Store from 'electron-store'
+// import Store from 'electron-store'
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -108,6 +109,16 @@ ipcMain.handle('library:scanDirectory', async (_event, dirPath) => {
   }
 
   return songs
+})
+
+ipcMain.handle('library:readAudioFile', async (_event, filePath) => {
+  try {
+    const data = await fs.readFile(filePath)
+    return data
+  } catch (error) {
+    console.error(`Error al leer el archivo ${filePath}:`, error)
+    throw error
+  }
 })
 
 // const store = new Store()
